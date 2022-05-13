@@ -2,10 +2,11 @@
 <html class="no-js">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="#" /><link rel="search" title="Search" href="search.html" />
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Welcome to cafle’s documentation!" href="index.html" />
 
-    <meta name="generator" content="sphinx-4.2.0, furo 2022.04.07"/><title>Index - cafle 0.0.1 documentation</title>
-<link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <meta name="generator" content="sphinx-4.2.0, furo 2022.04.07"/>
+        <title>Usage - cafle 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=68f4518137b9aefe99b631505a2064c3c42c9852" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
@@ -132,7 +133,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -152,8 +153,8 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+  <ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Usage</a></li>
 </ul>
 
 </div>
@@ -180,51 +181,57 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          
-<section class="genindex-section">
-  <h1 id="index">Index</h1>
-  <div class="genindex-jumpbox"><a href="#B"><strong>B</strong></a> | <a href="#L"><strong>L</strong></a></div>
-</section>
-<section id="B" class="genindex-section">
-  <h2>B</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li>
-    built-in function
-
-        <ul>
-          <li><a href="usage.html#lumache.get_random_ingredients">lumache.get_random_ingredients()</a>
-</li>
-        </ul></li>
-    </ul></td>
-  </tr></table>
-</section>
-
-<section id="L" class="genindex-section">
-  <h2>L</h2>
-  <table style="width: 100%" class="indextable genindextable"><tr>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li>
-    lumache.get_random_ingredients()
-
-        <ul>
-          <li><a href="usage.html#lumache.get_random_ingredients">built-in function</a>
-</li>
-        </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="usage.html#lumache.InvalidKindError">lumache.InvalidKindError</a>
-</li>
-    </ul></td>
-  </tr></table>
-</section>
-
+          <div class="section" id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">#</a></h1>
+<div class="section" id="installation">
+<span id="id1"></span><h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">#</a></h2>
+<p>To use Lumache, first install it using pip:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip install lumache
+</pre></div>
+</div>
+</div>
+<div class="section" id="creating-recipes">
+<h2>Creating recipes<a class="headerlink" href="#creating-recipes" title="Permalink to this headline">#</a></h2>
+<p>To retrieve a list of random ingredients,
+you can use the <code class="docutils literal notranslate"><span class="pre">lumache.get_random_ingredients()</span></code> function:</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="lumache.get_random_ingredients">
+<span class="sig-prename descclassname"><span class="pre">lumache.</span></span><span class="sig-name descname"><span class="pre">get_random_ingredients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lumache.get_random_ingredients" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a list of random ingredients as strings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>kind</strong> (<em>list</em><em>[</em><em>str</em><em>] or </em><em>None</em>) – Optional “kind” of ingredients.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="#lumache.InvalidKindError" title="lumache.InvalidKindError"><strong>lumache.InvalidKindError</strong></a> – If the kind is invalid.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The ingredients list.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+<p>The <code class="docutils literal notranslate"><span class="pre">kind</span></code> parameter should be either <code class="docutils literal notranslate"><span class="pre">"meat"</span></code>, <code class="docutils literal notranslate"><span class="pre">"fish"</span></code>, or <code class="docutils literal notranslate"><span class="pre">"veggies"</span></code>. Otherwise, <a class="reference internal" href="#lumache.get_random_ingredients" title="lumache.get_random_ingredients"><code class="xref py py-func docutils literal notranslate"><span class="pre">lumache.get_random_ingredients()</span></code></a> will raise an exception.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="lumache.InvalidKindError">
+<em class="property"><span class="pre">exception</span> </em><span class="sig-prename descclassname"><span class="pre">lumache.</span></span><span class="sig-name descname"><span class="pre">InvalidKindError</span></span><a class="headerlink" href="#lumache.InvalidKindError" title="Permalink to this definition">#</a></dt>
+<dd><p>Raised if the kind is invalid.</p>
+</dd></dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">lumache</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lumache</span><span class="o">.</span><span class="n">get_random_ingredients</span><span class="p">()</span>
+<span class="go">['shells', 'gorgonzola', 'parsley']</span>
+</pre></div>
+</div>
+</div>
+</div>
 
         </article>
       </div>
@@ -232,7 +239,17 @@
         
         <div class="related-pages">
           
-          
+          <a class="prev-page" href="index.html">
+              <svg><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Home</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -253,8 +270,28 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Usage</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#creating-recipes">Creating recipes</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
