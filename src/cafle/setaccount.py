@@ -24,8 +24,7 @@ class SetAccount:
                 self.tag_account(_acc, tagval)
         return _acc
 
-    def tag_account(self, acc, tag, addstr='t_'):
-        tag = addstr + tag
+    def tag_account(self, acc, tag):
         if tag in self.__dict__.keys():
             if isinstance(getattr(self, tag), dict):
                 pass
