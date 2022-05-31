@@ -20,6 +20,6 @@ cafle has modules
 Syntax highlighted code block
 
 * Index
-* Account
+* [Account][Account.html]
 * Loan
 ```
