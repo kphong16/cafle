@@ -1,13 +1,11 @@
 Metadata-Version: 2.1
 Name: cafle
-Version: 0.0.2
+Version: 0.0.4
 Summary: a cash flow estimating tool
 Home-page: https://github.com/kphong16
 Author: kphong
 Author-email: kphong16@daum.net
-License: UNKNOWN
 Project-URL: Bug Tracker, https://github.com/kphong16
-Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3
 Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
 Classifier: Operating System :: OS Independent
@@ -15,7 +13,7 @@ Requires-Python: >=3.6
 Description-Content-Type: text/markdown
 License-File: LICENSE
 
-# "cafle", the cash flow estimating tool
+# "cafle", a cash flow estimating tool
 
 ### cafle_module
 "cafle" is a module that can be used to estimate the cash flow of a alternative investment when reviewing various investment project.
@@ -27,4 +25,3 @@ Since I mainly focus on real estate development projects and real estate investm
 It often takes at least a few days to weeks to create a financial model with Excel, which also takes similar time to modify or create a new model for individual business and investment requirements. When the size of the model grows above a certain level, it is not common to interpret it or modify it.
 
 This module will greatly save the time spent using Excel.
-

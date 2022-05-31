@@ -135,23 +135,52 @@ def anynot_none(*args):
 
 class RangeIndex():
     """
+    Immutable sequence used for indexing a monotonic integer range.
+
     Parameters
     ----------
     start : int(default:0), range, RangeIndex instance
-      If int and 'stop' is not given, interpreted as 'stop' instead.
+        If 'start' is an int and 'stop' is not given, interpreted as 'stop' instead.
     stop : int(default:0)
     step : int(default:1)
+    name : str(default None)
+        Name of the index.
     
     
     Attributes
     ----------
-    start
-    stop
-    step
+    name : The name of index
+    len : The length of the index
+    data : Raw data of index
+    values : Raw data of index
     
     Methods
     -------
-    from_range
+    copy : Deep copy of the index
+
+    Examples
+    --------
+    Input one integer.
+    >>> idxa = RangeIndex(10, name='IdxA')
+    >>> idxa
+        RangeIndex(range(0, 10))
+    >>> idxa.name
+        'IdxA'
+    >>> len(idxa)
+        10
+    >>> idxa.len
+        10
+    >>> idxa.copy(name='NewIdxA')
+        RangeIndex(range(0, 10))
+    Input a RangeIndex.
+    >>> RangeIndex(idxa)
+        RangeIndex(range(0, 10))
+    Input a range.
+    >>> RangeIndex(range(0, 20))
+        RangeIndex(range(0, 20))
+    Input two integer(start, stop).
+    >>> RangeIndex(10, 20)
+        RangeIndex(range(10, 20))
     """
     def __new__(
         cls, 
@@ -161,26 +190,31 @@ class RangeIndex():
         name=None,
         ):
         
-        # RangeIndex
+        # RangeIndex, range
         if isinstance(start, RangeIndex):
+            if name is None:
+                name = start.name
             return start.copy(name=name)
         elif isinstance(start, range):
             return cls._simple_new(start, name)
             
         # validate the arguments
         if all_none(start, stop, step):
-            raise TypeError("RangeIndex(...) must be called with integers")
+            raise TypeError("RangeIndex(...) must be called with integers.")
             
-        start = cls._ensure_int(start) if start is not None else 0
+        if start is not None:
+            start = cls._ensure_int(start)
+        else:
+            start = 0
         
         if stop is None:
-            start, stop = 0, start
+            (start, stop) = (0, start)
         else:
             stop = cls._ensure_int(stop)
             
         step = cls._ensure_int(step) if step is not None else 1
         if step == 0:
-            raise ValueError("Step must not be zero")
+            raise ValueError("Step must not be zero.")
             
         rng = range(start, stop, step)
         
@@ -197,7 +231,6 @@ class RangeIndex():
         result._range = values
         result._name = name
         result._cache = {}
-        #result._reset_identity()
         return result
         
     @classmethod
@@ -258,14 +291,53 @@ class RangeIndex():
     @name.setter
     def name(self, value):
         self._name = value
+
+    @property
+    def len(self):
+        return self.__len__()
         
-    
-    
+
 class DateIndex():
+    """
+    Immutable sequence used for indexing date.
+
+    Parameters
+    ----------
+    data : date string, datetime.date, list(...)
+    name : str(default None)
+        Name of the index.
+
+    Attributes
+    ----------
+    name : The name of index
+    len : The length of the index
+    data : Raw data of index
+    values : Raw data of index
+
+    Methods
+    -------
+    copy : Deep copy of the index
+
+    Examples
+    --------
+    Input one date string.
+    >>> DateIndex('2022.01')
+        DateIndex(['2022.01.31'])
+    >>> DateIndex("2022-3-27")
+        DateIndex(['2022.03.27'])
+    Input one date type data.
+    >>> DateIndex(datetime.date(2022, 1, 1))
+        DateIndex(['2022.01.01'])
+    Input a list of date string.
+    >>> DateIndex(['2022.01', '2022.02', '2022.03'])
+        DateIndex(['2022.01.31', '2022.02.28', '2022.03.31'])
+    Input a list of date type data.
+    >>> DateIndex([date(2022, 1, 31), date(2022, 2, 28)])
+        DateIndex(['2022.01.31', '2022.02.28'])
+    """
     def __new__(
         cls,
         data=None,
-        freq=None,
         name=None,
         ):
         
@@ -276,6 +348,10 @@ class DateIndex():
         # string
         elif isinstance(data, str):
             dtarr = [str_to_date(data)]
+
+        # date
+        elif isinstance(data, date):
+            dtarr = [data]
             
         # list
         elif isinstance(data, list):
@@ -287,7 +363,7 @@ class DateIndex():
                     new_lst.append(str_to_date(val))
             dtarr = new_lst
         else:
-            raise TypeError("Input data type error.")
+            raise TypeError("There is a problem with the entered data type.")
             
         subarr = cls._simple_new(dtarr, name=name)
         return subarr
@@ -338,7 +414,7 @@ class DateIndex():
         Return a string representation for this object.
         """
         klass_name = type(self).__name__
-        data = str(self._data)
+        data = str([val.strftime("%Y.%m.%d") for val in self._data])
         return f"{klass_name}({data})"
     
     @property
@@ -355,11 +431,15 @@ class DateIndex():
     @name.setter
     def name(self, value):
         self._name = value
-            
-            
+
+    @property
+    def len(self):
+        return self.__len__()
+
+
 def date_range(
     start=None,
-    end=None,
+    stop=None,
     periods=None,
     freq=None,
     name=None,
@@ -371,21 +451,53 @@ def date_range(
     ----------
     start : str or datetime.date
         Left bound for generating dates.
-    end : str or datetime.date
+    stop : str or datetime.date
         Right bound for generating dates.
-    periods : int, optional
+    periods : int(>0), optional
         Number of periods to generate.
     freq : str or DateOffset, default 'M'
     
     Returns
     -------
-    rng : DateIndex
+    DateIndex
+
+    Attributes
+    ----------
+    name : The name of index
+    len : The length of the index
+    data : Raw data of index
+    values : Raw data of index
+
+    Methods
+    -------
+    copy : Deep copy of the index
+
+    Examples
+    --------
+    Input a start date and periods.
+    >>> date_range("2022.01", 3)
+        DateIndex(['2022.01.31', '2022.02.28', '2022.03.31'])
+    >>> date_range(date(2022, 1, 1), 3)
+        DateIndex(['2022.01.01', '2022.02.28', '2022.03.31'])
+    >>> idx = date_range("2022.01", 3)
+    >>> idx.len
+        3
+    >>> idx.data
+        [datetime.date(2022, 1, 1), datetime.date(2022, 2, 28), datetime.date(2022, 3, 31)]
+    >>> idx.values
+        [datetime.date(2022, 1, 1), datetime.date(2022, 2, 28), datetime.date(2022, 3, 31)]
+    Input an stop date and periods.
+    >>> date_range(stop='2022.12', periods=3)
+        DateIndex(['2022.10.31', '2022.11.30', '2022.12.31'])
+    Input a start date and an stop date.
+    >>> date_range('2022.01', '2022.03')
+        DateIndex(['2022.01.31', '2022.02.28', '2022.03.31'])
     """
     
-    if freq is None and any_none(periods, start, end):
+    if freq is None and any_none(periods, start, stop):
         freq = "M"
     
-    if allnot_none(start, end, periods):
+    if allnot_none(start, stop, periods):
         raise ValueError("There are too many data.")
     elif allnot_none(start, periods):
         dtarr = []
@@ -393,84 +505,165 @@ def date_range(
             start = str_to_date(start)
             dtarr.append(start)
             dt_next = start
+        else:
+            raise ValueError(
+                "'periods' should be larger than 0."
+            )
         for no in range(1, periods):
             dt_next = date_next(dt_next, freq=freq)
             dtarr.append(dt_next)
-    elif allnot_none(end, periods):
-        end = str_to_date(end)
-        start = end - relativedelta(months=(periods-1))
+    elif allnot_none(stop, periods):
+        stop = str_to_date(stop)
+        start = stop - relativedelta(months=(periods-1))
         return date_range(start, periods=periods)
-    elif allnot_none(start, end):
-        dtarr = []
-        start = str_to_date(start)
-        if isinstance(end, int):
-            periods = end
-            if periods > 0:
-                dtarr.append(start)
-                dt_next = start
-            for no in range(1, periods):
-                dt_next = date_next(dt_next, freq=freq)
-                dtarr.append(dt_next)
+    elif allnot_none(start, stop):
+        if isinstance(stop, int):
+            periods = stop
+            return date_range(start, periods=periods)
         else:
-            end = str_to_date(end)
-            if end == start:
+            dtarr = []
+            start = str_to_date(start)
+            stop = str_to_date(stop)
+            if stop == start:
                 dtarr.append(start)
-            elif end > start:
+            elif stop > start:
                 dtarr.append(start)
                 dt_next = start
                 while True:
-                    if dt_next >= end:
+                    if dt_next >= stop:
                         break
                     dt_next = date_next(dt_next, freq=freq)
                     dtarr.append(dt_next)
-            elif end < start:
-                raise ValueError("The end date is before the start date.")
+            elif stop < start:
+                raise ValueError("The stop date is before the start date.")
         
     subarr = DateIndex._simple_new(dtarr, name=name)
     return subarr
 
 
+class Index():
+    """
+    Immutable sequence used for indexing.
 
+    Parameters
+    ----------
+    start : int, str or datetime.date, list(date)
+    stop : int, str or datetime.date
+    step : int
+    periods : int(>0), optional
+        Number of periods to generate.
+    freq : str or DateOffset, default 'M'
+    name : name of index
 
+    Returns
+    -------
+    RangeIndex or DateIndex
 
+    Attributes
+    ----------
+    name : The name of index
+    len : The length of the index
+    data : Raw data of index
+    values : Raw data of index
 
+    Methods
+    -------
+    copy : Deep copy of the index
 
+    Examples
+    --------
+    Input a start date and periods.
+    >>> Index("2022.01", 3)
+        DateIndex(['2022.01.31', '2022.02.28', '2022.03.31'])
+    >>> Index(date(2022, 1, 1), 3)
+        DateIndex(['2022.01.01', '2022.02.28', '2022.03.31'])
+    >>> idx = Index("2022.01", 3)
+    >>> idx.len
+        3
+    >>> idx.data
+        [datetime.date(2022, 1, 1), datetime.date(2022, 2, 28), datetime.date(2022, 3, 31)]
+    >>> idx.values
+        [datetime.date(2022, 1, 1), datetime.date(2022, 2, 28), datetime.date(2022, 3, 31)]
+    Input an stop date and periods.
+    >>> Index(stop='2022.12', periods=3)
+        DateIndex(['2022.10.31', '2022.11.30', '2022.12.31'])
+    Input a start date and an stop date.
+    >>> Index('2022.01', '2022.03')
+        DateIndex(['2022.01.31', '2022.02.28', '2022.03.31'])
+    Input one date string.
+    >>> Index('2022.01')
+        DateIndex(['2022.01.31'])
+    >>> Index("2022-3-27")
+        DateIndex(['2022.03.27'])
+    Input one date type data.
+    >>> Index(datetime.date(2022, 1, 1))
+        DateIndex(['2022.01.01'])
+    Input a list of date string.
+    >>> Index(['2022.01', '2022.02', '2022.03'])
+        DateIndex(['2022.01.31', '2022.02.28', '2022.03.31'])
+    Input a list of date type data.
+    >>> Index([date(2022, 1, 31), date(2022, 2, 28)])
+        DateIndex(['2022.01.31', '2022.02.28'])
+    Input one integer.
+    >>> Index(10, name='IdxA')
+        RangeIndex(range(0, 10))
+    >>> idxa.name
+        'IdxA'
+    >>> idxa.copy(name='NewIdxA')
+        RangeIndex(range(0, 10))
+    Input a RangeIndex.
+    >>> Index(idxa)
+        RangeIndex(range(0, 10))
+    Input a range.
+    >>> Index(range(0, 20))
+        RangeIndex(range(0, 20))
+    Input two integer(start, stop).
+    >>> Index(10, 20)
+        RangeIndex(range(10, 20))
+    """
+    def __new__(
+        cls,
+        start=None,
+        stop=None,
+        step=None,
+        periods=None,
+        freq=None,
+        name=None,
+        ):
 
+        # RangeIndex
+        if isinstance(start, RangeIndex):
+            if name is None:
+                name = start.name
+            return RangeIndex(start, name=name)
+        if isinstance(start, range):
+            return RangeIndex(start, name=name)
+        if isinstance(start, int):
+            return RangeIndex(start, stop, step, name)
+        if start is None:
+            if isinstance(stop, int):
+                return RangeIndex(start, stop, step, name)
 
+        # DateIndex
+        if isinstance(start, DateIndex):
+            if name is None:
+                name = start.name
+            return DateIndex(start, name=name)
+        if isinstance(start, str):
+            if all_none(stop, step, periods):
+                return DateIndex(start, name=name)
+        if isinstance(start, date):
+            if all_none(stop, step, periods):
+                return DateIndex(start, name=name)
+        if isinstance(start, list):
+            if all_none(stop, step, periods):
+                return DateIndex(start, name=name)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        # date_range
+        if isinstance(start, (str, date)):
+            if isinstance(stop, (int, str, date)):
+                return date_range(start, stop, periods=periods, freq=freq, name=name)
+        if start is None:
+            if isinstance(stop, (str, date)):
+                return date_range(start, stop, periods=periods, freq=freq, name=name)
 

@@ -577,8 +577,8 @@ class Account(object):
         
     def __repr__(self):
         """Return a string representation for this object."""
-        if len(self.df) > 15:
-            repr = f"{self.df.head(5)}\n...\n{self.df.tail(5)}"
+        if len(self.df) > 5:
+            repr = f"{self.df.head(2)}\n...\n{self.df.tail(2)}"
         else:
             repr = f"{self.df}"
         if 'byname' in self.__dict__:
@@ -903,8 +903,8 @@ class Merge(object):
         for key in self.dct.keys():
             repr_key.append(key)
         
-        if len(self.df) > 15:
-            repr_df = f"{self.df.head(5)}\n...\n{self.df.tail(5)}"
+        if len(self.df) > 5:
+            repr_df = f"{self.df.head(2)}\n...\n{self.df.tail(2)}"
         else:
             repr_df = f"{self.df}"
         repr = f"Accounts: {repr_key}\n" + repr_df
