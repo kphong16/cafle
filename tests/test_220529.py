@@ -1,5 +1,5 @@
-from src import cafle2 as cf
-from src.cafle2 import (
+from src import cafle as cf
+from src.cafle import (
     Account,
     SetAccount,
 )
@@ -17,6 +17,25 @@ class Idx:
         self.cstrn      = cf.date_range("2022.08", periods=self.prd_cstrn)
 idx = Idx()
 Account._index = idx.prjt
+
+#### Assumption Loan ####
+loan = cf.Loan(
+    index=idx.prjt,
+    idxfn=idx.loan,
+
+    mtrt=idx.mtrt,
+    rate_arng=0.015,
+    title=["tra"],
+    rnk=[0],
+    amt_ntnl=[130_000],
+    amt_intl=[0],
+    rate_fee=[0.015],
+    rate_IR=[0.065],
+    rate_fob=[0.005],
+)
+for key, item in loan.dct.items():
+    item.ntnl.subscd(item.idxfn[0], item.amt_ntnl)
+    item.ntnl.addscd(item.idxfn[-1], item.amt_ntnl)
 
 #### Assumption Costs ####
 cost3 = SetAccount()

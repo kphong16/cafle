@@ -8,8 +8,17 @@ __all__ = ['SetAccount']
 
 #### Set Account ####
 class SetAccount:
-    def __init__(self):
+    def __init__(self, title=None, byname=None):
+        self.title = title
+        self.byname = byname
         self._dct = {}
+
+    @property
+    def keys(self):
+        return self.__dict__.keys()
+
+    def __getitem__(self, key):
+        return self.__dict__[key]
 
     def set_account(self, title, byname=None, tag=None):
         _acc = Account(title=title, byname=byname)
@@ -17,6 +26,21 @@ class SetAccount:
         setattr(self, title, _acc)
         self._dct[title] = _acc
 
+        if isinstance(tag, str):
+            self.tag_account(_acc, tag)
+        elif isinstance(tag, list):
+            for tagval in tag:
+                self.tag_account(_acc, tagval)
+        return _acc
+
+    def get_account(self, _acc):
+        title = _acc.title
+        if 'tag' in _acc.__dict__:
+            tag = _acc.tag
+        else:
+            tag = None
+        setattr(self, title, _acc)
+        self._dct[title] = _acc
         if isinstance(tag, str):
             self.tag_account(_acc, tag)
         elif isinstance(tag, list):

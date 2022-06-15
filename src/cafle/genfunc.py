@@ -67,6 +67,10 @@ class Area:
         if all([self._m2 is None, self._py is not None]):
             self._m2 = round(self._py / PY, self._roundunit)
             
+    def __repr__(self):
+        repr_tmp = f"{self.m2:,.0f}m2 ({self.py:,.0f}py)"
+        return repr_tmp
+    
     @property
     def area(self):
         return (self._m2, self._py)

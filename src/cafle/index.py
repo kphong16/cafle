@@ -28,12 +28,12 @@ import numpy as np
 
 from datetime import (
     date,
-    timedelta
+    timedelta,
 )
 from dateutil.relativedelta import relativedelta
 
 #from .genfunc import is_iterable
-__all__ = ['RangeIndex', 'DateIndex', 'date_range'] #, 'booleanloc', 'PrjtIndex']
+__all__ = ['RangeIndex', 'DateIndex', 'date_range', 'Index'] #, 'booleanloc', 'PrjtIndex']
 
 
 def is_scalar(value):
@@ -86,21 +86,22 @@ def date_monthend(year, month=None):
         dt_monthend = dt_next - timedelta(days=1)
     return dt_monthend
 
-def date_next(dt, freq='M'):
+def date_next(dt, num=1, freq='M'):
+    if isinstance(dt, str):
+        dt = str_to_date(dt)
     assert isinstance(dt, date)
     if freq=='M':
-        if dt.month in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]:
-            month_next = dt.month + 1
-            dt_next = date_monthend(dt.year, month_next)
-        elif dt.month == 12:
-            year_next = dt.year + 1
-            dt_next = date_monthend(year_next, month=1)
+        month_next = dt.month + num - 1
+        year_next, month_next = divmod(month_next, 12)
+        month_next += 1
+        year_next = dt.year + year_next
+        dt_next = date_monthend(year_next, month_next)
         return dt_next
     if freq=='Y':
-        dt_next = dt + relativedelta(years=1)
+        dt_next = dt + relativedelta(years=num)
         return dt_next
     if freq=='D':
-        dt_next = dt + timedelta(days=1)
+        dt_next = dt + timedelta(days=num)
         return dt_next
     
 def is_samemonth(*args):
