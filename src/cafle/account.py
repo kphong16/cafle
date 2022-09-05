@@ -153,10 +153,12 @@ class Account(object):
                     raise ValueError
         
         _jnl = DataFrame(columns = JNLCOL)
+        _jnlscd = DataFrame(columns = JNLCOL)
         
         self.index = _index
         self._df = _df
         self._jnl = _jnl
+        self._jnlscd = _jnlscd
         
         for key, item in kwargs.items():
             kwargsitem = ['title', 'byname']
@@ -200,7 +202,7 @@ class Account(object):
                                         
     # Input Data
     @listwrapper
-    def addscd(self, idxval, amt):
+    def addscd(self, idxval, amt, rcvfrm=None, note="add_scd"):
         """
         Add the amount on the 'scd_in' column of dataframe.
         
@@ -217,12 +219,13 @@ class Account(object):
             idxval = self.index[idxval]
         elif isinstance(idxval, str):
             idxval = str_to_date(idxval)
-        
+
+        self.iptjnlscd(idxval, amt, 0, rcvfrm, None, note)
         self._df.loc[idxval, 'scd_in'] += amt
         self._cal_bal()
     
     @listwrapper
-    def subscd(self, idxval, amt):
+    def subscd(self, idxval, amt, payto=None, note="sub_scd"):
         """
         Add the amount on the 'scd_out' column of dataframe.
         
@@ -239,7 +242,8 @@ class Account(object):
             idxval = self.index[idxval]
         elif isinstance(idxval, str):
             idxval = str_to_date(idxval)
-            
+
+        self.iptjnlscd(idxval, 0, amt, None, payto, note)
         self._df.loc[idxval, 'scd_out'] += amt
         self._cal_bal()
         
@@ -351,6 +355,28 @@ class Account(object):
         tmpjnl = DataFrame([[amt_in, amt_out, rcvfrm, payto, note]], 
                            columns=JNLCOL, index=[idxval])
         self._jnl = pd.concat([self._jnl, tmpjnl])
+
+    def iptjnlscd(self, idxval, amt_in, amt_out, rcvfrm=None, payto=None, note=None):
+        """
+        Add the amount on the journal.
+
+        Parameters
+        ----------
+        idxval : index
+        amt_in : int, float
+        amt_out : int, float
+        rcvfrm : str, default None
+        payto : str, default None
+        note : str, default None
+        """
+        if isinstance(idxval, int):
+            idxval = self.index[idxval]
+        elif isinstance(idxval, str):
+            idxval = str_to_date(idxval)
+
+        tmpjnl = DataFrame([[amt_in, amt_out, rcvfrm, payto, note]],
+                           columns=JNLCOL, index=[idxval])
+        self._jnlscd = pd.concat([self._jnlscd, tmpjnl])
     
     def __getattr__(self, attr):
         return self.__dict__[attr]
@@ -374,6 +400,15 @@ class Account(object):
             ['amt_in', 'amt_out', 'rcvfrm', 'payto', 'note']
         """
         return self._jnl
+
+    @property
+    def jnlscd(self):
+        """
+        Return the journal dataframe
+        Return columns : JNLCOL
+            ['amt_in', 'amt_out', 'rcvfrm', 'payto', 'note']
+        """
+        return self._jnlscd
     
     # Decorator
     class getattr_dfcol:
@@ -758,6 +793,16 @@ class Merge(object):
     def title(self):
         dfdct = Series({key: item.title for key, item in self._dct.items()})
         return dfdct
+
+    @property
+    def jnl(self):
+        dflst = [item.jnl for item in self._dct.values()]
+        return pd.concat(dflst).sort_index()
+
+    @property
+    def jnlscd(self):
+        dflst = [item.jnlscd for item in self._dct.values()]
+        return pd.concat(dflst).sort_index()
         
     def __getattr__(self, attr):
         return [item.__dict__[attr] for key, item in self._dct.items()]

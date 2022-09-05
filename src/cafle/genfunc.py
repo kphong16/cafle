@@ -18,10 +18,11 @@ Area : transform between m2 and PY units.
 import math
 from datetime import datetime
 from functools import wraps
+from collections import OrderedDict
 from pandas.api.types import is_numeric_dtype
 
 __all__ = ['PY', 'Area', 'EmptyClass', 'is_iterable', 'limited', 'rounding', 
-           'print_rounding', 'round_up', 'log10']
+           'print_rounding', 'round_up', 'log10', 'extnddct']
 
 PY = 1/3.305785
 # PY("pyung") is the area unit used in Korea.
@@ -228,7 +229,6 @@ def round_up(number:float, decimals:int=2):
     factor = 10 ** decimals
     return math.ceil(number * factor) / factor
 
-    
 def log10(val):
     tmpval = 0
     while True:
@@ -237,72 +237,51 @@ def log10(val):
             tmpval += 1
         else:
             return tmpval
-    
 
 # Decorator
 def listwrapper(func):
     @wraps(func)
     def wrapped(self, *args, **kwargs):
-        is_iter = True
+        ilen = 1
         for arg in args:
-            if is_iterable(arg) is False:
-                is_iter = False
-        for item in kwargs.values():
-            if is_iterable(item) is False:
-                is_iter = False
-                
-        if is_iter is True:
-            ilen = 0
-            for arg in args:
-                if len(arg) > ilen:
+            if is_iterable(arg) is True:
+                if ilen == 1:
                     ilen = len(arg)
-            for item in kwargs.values():
-                if len(item) > ilen:
+                else:
+                    if ilen != len(arg):
+                        raise ValueError("All arguments should be of the same length.")
+        for item in kwargs.values():
+            if is_iterable(item) is True:
+                if ilen == 1:
                     ilen = len(item)
-            
-            for i in range(ilen):
-                new_args = []
-                new_kwargs = {}
-                
-                for val in args:
-                    new_args = new_args + [val[i]]
-                new_args = tuple(new_args)
-                
-                for key, item in kwargs.items():
-                    new_kwargs[key] = item 
-                
-                func(self, *new_args, **new_kwargs)
-        else:
-            new_args = args
-            new_kwargs = kwargs
+                else:
+                    if ilen != len(item):
+                        raise ValueError("All arguments should be of the same length.")
+        for i in range(ilen):
+            new_args = []
+            new_kwargs = {}
+            for val in args:
+                if is_iterable(val) is True:
+                    new_args.append(val[i])
+                else:
+                    new_args.append(val)
+            new_args = tuple(new_args)
+            for key, item in kwargs.items():
+                if is_iterable(item) is True:
+                    new_kwargs[key] = item[i]
+                else:
+                    new_kwargs[key] = item
             func(self, *new_args, **new_kwargs)
     return wrapped
-    
 
+# Extend Dictionary
+def extnddct(dct, *args):
+    #dct = OrderedDict(dct)
+    for val in args:
+        #val = OrderedDict(val)
+        dct |= val
+    return dct
 
-"""
-# Decorator
-def listwrapper(func):
-    @wraps(func)
-    def wrapped(self, *args):
-        is_iter = True
-        for arg in args:
-            if is_iterable(arg) is False:
-                is_iter = False
-        if is_iter is True:
-            ilen = len(args[0])
-            for i in range(ilen):
-                new_args = []
-                for val in args:
-                    new_args = new_args + [val[i]]
-                new_args = tuple(new_args)
-                func(self, *new_args)
-        else:
-            new_args = args
-            func(self, *new_args)
-    return wrapped
-"""
-    
     
     
     

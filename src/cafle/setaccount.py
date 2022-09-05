@@ -1,4 +1,5 @@
 from types import FunctionType
+#from collections import OrderedDict
 from .account import (
     Account,
     Merge,
@@ -8,10 +9,14 @@ __all__ = ['SetAccount']
 
 #### Set Account ####
 class SetAccount:
-    def __init__(self, title=None, byname=None):
+    def __init__(self, title=None, byname=None, index=None):
         self.title = title
-        self.byname = byname
-        self._dct = {}
+        if byname is None:
+            self.byname = title
+        else:
+            self.byname = byname
+        self.index = index
+        self._dct = {} #OrderedDict()
 
     @property
     def keys(self):
@@ -20,8 +25,12 @@ class SetAccount:
     def __getitem__(self, key):
         return self.__dict__[key]
 
-    def set_account(self, title, byname=None, tag=None):
-        _acc = Account(title=title, byname=byname)
+    def set_account(self, title, highlevel=None, byname=None, tag=None, index=None):
+        if byname is None:
+            byname = title
+        if index is None:
+            index = self.index
+        _acc = Account(title=title, byname=byname, index=index)
 
         setattr(self, title, _acc)
         self._dct[title] = _acc
@@ -31,10 +40,21 @@ class SetAccount:
         elif isinstance(tag, list):
             for tagval in tag:
                 self.tag_account(_acc, tagval)
+                
+        if highlevel is not None:
+            if 'dct_high' not in vars(self):
+                self.dct_high = {} #OrderedDict()
+            if highlevel not in self.dct_high.keys():
+                iptvalhigh = SetAccount(highlevel)
+                self.dct_high[highlevel] = iptvalhigh
+                setattr(self, highlevel, iptvalhigh)
+            self.dct_high[highlevel].getacc(_acc)
         return _acc
+    setacc = set_account
 
-    def get_account(self, _acc):
-        title = _acc.title
+    def get_account(self, _acc, title=None):
+        if title is None:
+            title = _acc.title
         if 'tag' in _acc.__dict__:
             tag = _acc.tag
         else:
@@ -47,16 +67,14 @@ class SetAccount:
             for tagval in tag:
                 self.tag_account(_acc, tagval)
         return _acc
-
+    getacc = get_account
+    
     def tag_account(self, acc, tag):
-        if tag in self.__dict__.keys():
-            if isinstance(getattr(self, tag), dict):
-                pass
-            else:
-                raise NameError("The tag name is already existing in account keys.")
-        else:
-            setattr(self, tag, {})
-        getattr(self, tag)[acc.title] = acc
+        if 'tag' not in vars(self):
+            self.tag = {} #OrderedDict()
+        if tag not in self.tag:
+            self.tag[tag] = SetAccount(tag)
+        self.tag[tag].getacc(acc)
 
     def get_item(self, valdct=None, item='amt_ttl', func='sum'):
         if valdct is None:
@@ -87,3 +105,17 @@ class SetAccount:
         if len(self._dct) == 0:
             return None
         return self._dct
+        
+    @property
+    def mrg(self):
+        return Merge(self._dct)
+            
+    @property
+    def amt(self):
+        rslt = 0
+        for item in self._dct.values():
+            try:
+                rslt += item.amt
+            except:
+                pass
+        return rslt
