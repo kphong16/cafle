@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Written by KP_Hong <kphong16@daum.net>
 2021, KP_Hong
@@ -18,8 +16,5 @@ In many cases, it takes more than a few weeks to create a financial model with E
 from .genfunc import *
 from .index import *
 from .account import *
-from .loan import *
 from .write import *
-from .setaccount import *
-from .standarddata import *
 
