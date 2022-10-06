@@ -7,9 +7,6 @@ from astn3_loan import loan
 from astn4_costs import cost
 
 def execute_cf():
-    global idxno
-    global amt_rqrd
-    global amt_wtdrw
     for idxno in idx:
         #Withdraw Equity Amount
         equity.withdraw_equity_amount(idxno, acc.oprtg)

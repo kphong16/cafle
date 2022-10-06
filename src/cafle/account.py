@@ -66,6 +66,7 @@ class Account:
     def _index_new(cls, index):
         result = object.__new__(cls)
         result.index = index
+        result.name = 'main'
         result._df = cls._make_dataframe(index)
         result._initialize()
         return result
@@ -74,6 +75,7 @@ class Account:
     def _df_new(cls, df):
         result = object.__new__(cls)
         result.index = df.index
+        result.name = 'main'
         result._df = cls._make_dataframe(df.index)
         for key in df.columns:
             if key in DFCOL_inpt:
@@ -104,9 +106,9 @@ class Account:
     def __repr__(self):
         """Return a string representation for this object."""
         if '_dct' in vars(self):
-            repr = f"Account(len: {len(self.index)!r}, dct: {list(self.dct.keys())!r}"
+            repr = f"Account({self.name}, len {len(self.index)!r}, dct: {list(self.dct.keys())!r})"
         else:
-            repr = f"Account(len: {len(self.index)!r})"
+            repr = f"Account({self.name}, len {len(self.index)!r})"
 
         """if len(self.df) > 5:
             repr = f"{self.df.head(2)}\n...\n{self.df.tail(2)}"
@@ -583,6 +585,7 @@ class Account:
     #Set and Manage Sub Account
     def subacc(self, name):
         _acc = Account(self.index)
+        _acc.name = name
 
         if '_dct' not in vars(self):
             self._dct = {}

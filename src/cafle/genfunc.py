@@ -146,14 +146,14 @@ def limited(val, upper=None, lower=None):
 
     tmp_val = val
     
-    if upper:
+    if upper is not None:
         if is_iterable(upper):
             for val_lmt in upper:
                 tmp_val = min(tmp_val, val_lmt)
         else:
             tmp_val = min(tmp_val, upper)
             
-    if lower:
+    if lower is not None:
         if is_iterable(lower):
             for val_lmt in lower:
                 tmp_val = max(tmp_val, val_lmt)
@@ -279,9 +279,3 @@ def extnddct(dct, *args):
         #val = OrderedDict(val)
         dct |= val
     return dct
-
-    
-    
-    
-    
-    
