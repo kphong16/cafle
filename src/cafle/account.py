@@ -460,7 +460,6 @@ class Account:
 
                     new_slice = slice(new_start, new_stop)
                     return self.spristnc._df.loc[new_slice, self.colname]
-
             cls.__getitem__ = getitem
 
             return cls
