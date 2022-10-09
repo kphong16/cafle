@@ -1,12 +1,35 @@
-# "cafle", a cash flow estimating tool
+# "cafle": 재무모델 작성 패키지
 
-### cafle_module
-"cafle" is a module that can be used to estimate the cash flow of a alternative investment when reviewing various investment project.
-"Index", "Account" and "Loan" modules on "cafle" make it easier to estimate the cash flow of the project.
+### cafle
+cafle은 기존 대부분 엑셀로 작업하던 재무모델(현금흐름추정 모델)을 python으로 작업할 수 있도록 도와 주는 python 패키지 입니다. cafle에는 index, account, write 모듈이 있습니다.
 
-Financial planners and investors in charge of investment project frequently estimate cash flows for investment projects and review the adequacy of investment.
-Since I mainly focus on real estate development projects and real estate investment, I prepared examples focusing on real estate development projects. However, I think it can be used where various financial models are needed, such as other infrastructure projects and new projects.
+account 모듈은 각각 개별 현금흐름의 내용을 저장하고, 현금흐름의 유출입을 관리하는 모듈이며, index모듈은 날짜 등 현금흐름의 시간적인 요소를 컨트롤하기 위한 모듈입니다.
+write 모듈은 최종적으로 작성된 현금흐름을 엑셀 파일 상에 출력해주는 모듈 입니다.
 
-It often takes at least a few days to weeks to create a financial model with Excel, which also takes similar time to modify or create a new model for individual business and investment requirements. When the size of the model grows above a certain level, it is not common to interpret it or modify it.
+매출, 사업비, 자금의 조달, 운영계좌 등 재무모델에 반영되는 각각의 요소들을 각각 하나의 account로 설정한 후 index에서 표현되는 시간 흐름에 따라 각각의 요소들간 사업 진행에 따라 발생되는 현금흐름의 유출입을 account 내에 기록합니다.
+account 내에 기록된 현금흐름들은 최종 모델링 후 개별적으로 확인이 가능합니다.
 
-This module will greatly save the time spent using Excel.
+구체적으로 얘기하자면,,, 자금의 조달, 매출 등 각각의 요소들 별로 사업적인 반응 조건들을 account에 설정합니다.
+자금의 조달의 경우 조달 금액, 시점, 금리, 각종 수수료와 시점 및 상황 별로 취해지는 액션들을 자금조달 account에 설정합니다.
+매출의 경우 매출의 발생 시점 및 금액 등 주요 가정들을 매출 account에 설정합니다.
+사업비, 운영계좌 등도 각각의 account에 필요한 조건 및 액션들을 설정합니다.
+이후 통합적으로 index의 흐름에 따라 account들 끼리 서로 현금흐름을 설정된 사항에 맞춰 주고 받도록 합니다.
+최종 모델링이 끝나면, 최종 작업 완료된 account에서 현금흐름 내역을 확인할 수 있습니다.
+
+### 패키지 작성 취지
+금융회사에서 부동산개발사업(Project Financing) 분야에 10여년 가까이 종사해 오면서 투자 의사 결정을 위해 많은 재무모델을 직접 다뤄왔습니다.
+엑셀로 만든 재무모델은 그 자체로 투자 업무를 담당하는 사람들에게는 하나의 언어로서의 역할을 합니다.
+모델 작성에는 많은 시간과 노력을 소요하게 되는데, 다양한 영역의 투자 건들을 수시로 다뤄야 하는 입장에서는 모델 작성 및 관리에 소요되는 시간이 아쉬울 수 밖에 없습니다.
+
+python과 같은 프로그래밍 언어로 재무모델을 작성하게 되면 주요한 모델의 영역들을 모듈화를 시켜서 미리 작성된 모듈들을 서로 갖다 붙이기만 하는 방식으로 모델을 작성하고 관리할 수 있습니다.
+충분히 모듈화가 된다면, 각각의 사업영역 및 사업구도에 맞춰서 레고 블록을 맞추듯 재무모델 작성이 가능합니다.
+cafle 패키지는 이러한 모듈화의 첫 시도입니다.
+
+### 재무모델 작성 샘플
+tests-FS_model_sample2 폴더의 Example.xlsx 파일은 패키지를 이용하여 작성된 간단한 재무모델의 작성결과 샘플 입니다.
+해당 폴더의 cashflow.py은 사업기간 전반 동안 최초 자금의 인출에서 부터 사업비 지출, 외부조달 자금의 상환 까지 현금흐름을 전반적으로 컨트롤하고 있습니다.
+현재 올려진 샘플은 간단한 형태의 개발사업을 모델링 한 것이지만, 사업 및 자금조달의 구도가 복잡해지더라도 python으로 구현이 가능하며, 복잡해질 수록 엑셀 보다는 python으로 구현하는 것이 향후 관리 측면에서 유리합니다.
+
+### 추가적으로...
+회사일로 바빠서 틈틈이 작업해온 것인데, 이제야 누군가 남에게 보여줄 만한 수준이 된 것 같습니다.
+향후 임의로 수정될 수 있으며, 혹시 상기 취지에 관심 있는 분이 있다면 연락주시면 반갑겠습니다.
