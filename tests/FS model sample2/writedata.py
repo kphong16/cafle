@@ -12,6 +12,7 @@ class WriteData:
 
         self._writeastn()
         self._writecf()
+        self._writeloan()
 
         self.wb.close()
 
@@ -138,6 +139,56 @@ class WriteData:
         #Write Dictionary
         wd(dctsum, fmtkey=wb.bold, fmt=wb.num, valdrtn='row', drtn='col')
 
+    #Write Loan
+    def _writeloan(self):
+        wb = self.wb
+        ws = wb.add_ws('financing')
+        ws.set_column("A:A", 12)
+        wd = WriteWS(ws, Cell(0, 0))
+
+        #Write Head
+        wd('FINANCING', wb.bold)
+        wd('Written at: ' + wb.now)
+        wd(self.prtname)
+        cell = wd.nextcell(2)
+
+        #Write Index
+        wd.nextcell(3)
+        wd(idx, wb.date, valdrtn='col', drtn='col')
+        wd('합계', wb.nml)
+
+        wd.setcell(cell)
+        wd.nextcell(1, drtn='col')
+
+        tmpdct = {}
+        #Write Loan
+        for key, ln in loan.dct.items():
+            tmpdct['Loan_'+key] = wb.dctprt_loan(ln)
+        #Write Equity
+        _ = {}
+        for key, eqt in equity.dct.items():
+            _['Equity_' + key] = {
+                '인출한도': eqt._df.scd_out,
+                '상환예정': eqt._df.scd_in,
+                '인출금액': eqt._df.amt_out,
+                '상환금액': eqt._df.amt_in,
+                '대출잔액': eqt._df.bal_end,
+            }
+        tmpdct['Equity'] = _
+        #Add Sum
+        dctsum = {}
+        for key, dct in tmpdct.items():
+            dctsum[key] = {}
+            for key2, dct2 in dct.items():
+                dctsum[key][key2] = {}
+                for key3, srs in dct2.items():
+                    if key3 in ['대출잔액', '누적이자', '누적수수료', '누적미인출']:
+                        tmpval = '-'
+                    else:
+                        tmpval = sum(srs)
+                    dctsum[key][key2][key3] = pd.concat([srs, Series([tmpval], index=['합계'])])
+        #Write Dictionary
+        wd(dctsum, fmtkey=wb.bold, fmt=wb.num, valdrtn='row', drtn='col')
 
 DATE = date.today().strftime('%y%m%d')
 prtname = f"Example_{DATE}.xlsx"

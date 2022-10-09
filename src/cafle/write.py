@@ -201,23 +201,23 @@ class Write:
     #Make Dictionary of Loan
     def dct_loan(self, ln):
         tmpdct = {} #OrderedDict()
-        tmpdct["Notional_" + ln.title] = \
+        tmpdct["Notional_" + ln.name] = \
             {"scd_out": ln.ntnl._df.scd_out,
              "scd_in": ln.ntnl._df.scd_in,
              "amt_out": ln.ntnl._df.amt_out,
              "amt_in": ln.ntnl._df.amt_in,
              "bal_end": ln.ntnl._df.bal_end}
 
-        if 'IR' in ln.keys:
-            tmpdct["IR_" + ln.title] = \
+        if 'IR' in ln.dct.keys():
+            tmpdct["IR_" + ln.name] = \
                 {"amt_in": ln.IR._df.amt_in,
                  "bal_end": ln.IR._df.bal_end}
-        if 'fee' in ln.keys:
-            tmpdct["Fee_" + ln.title] = \
+        if 'fee' in ln.dct.keys():
+            tmpdct["Fee_" + ln.name] = \
                 {"amt_in": ln.fee._df.amt_in,
                  "bal_end": ln.fee._df.bal_end}
-        if 'fob' in ln.keys:
-            tmpdct["Fob_" + ln.title] = \
+        if 'fob' in ln.dct.keys():
+            tmpdct["Fob_" + ln.name] = \
                 {"amt_in": ln.fob._df.amt_in,
                  "bal_end": ln.fob._df.bal_end}
         return tmpdct
@@ -225,23 +225,23 @@ class Write:
     # Make Dictionary of Loan
     def dctprt_loan(self, ln):
         tmpdct = {} #OrderedDict()
-        tmpdct["Notional_" + ln.title] = \
+        tmpdct["Notional_" + ln.name] = \
             {"인출한도": ln.ntnl._df.scd_out,
              "상환예정": ln.ntnl._df.scd_in,
              "인출금액": ln.ntnl._df.amt_out,
              "상환금액": ln.ntnl._df.amt_in,
              "대출잔액": ln.ntnl._df.bal_end}
 
-        if 'IR' in ln.keys:
-            tmpdct["IR_" + ln.title] = \
+        if 'IR' in ln.dct.keys():
+            tmpdct["IR_" + ln.name] = \
                 {"이자금액": ln.IR._df.amt_in,
                  "누적이자": ln.IR._df.bal_end}
-        if 'fee' in ln.keys:
-            tmpdct["Fee_" + ln.title] = \
+        if 'fee' in ln.dct.keys():
+            tmpdct["Fee_" + ln.name] = \
                 {"수수료금액": ln.fee._df.amt_in,
                  "누적수수료": ln.fee._df.bal_end}
-        if 'fob' in ln.keys:
-            tmpdct["미인출_" + ln.title] = \
+        if 'fob' in ln.dct.keys():
+            tmpdct["미인출_" + ln.name] = \
                 {"미인출수수료": ln.fob._df.amt_in,
                  "누적미인출": ln.fob._df.bal_end}
         return tmpdct
