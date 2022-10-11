@@ -1,4 +1,4 @@
-# "cafle": 재무모델 작성 패키지
+# "cafle": 재무모델 작성 패키지 for python
 
 ### cafle
 cafle은 기존 대부분 엑셀로 작업하던 재무모델(현금흐름추정 모델)을 python으로 작업할 수 있도록 도와 주는 python 패키지 입니다. cafle에는 index, account, write 모듈이 있습니다.
