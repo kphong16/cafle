@@ -1,6 +1,7 @@
 """
 Created on Sun Dec 19 17:41:35 2021
 Editted on Jul 24 2022
+Editted on Oct 12 2022
 
 @author: KP_Hong
 """
@@ -9,26 +10,45 @@ import xlsxwriter
 from datetime import datetime
 from pandas import DataFrame
 from cafle.genfunc import is_iterable, is_scalar
-from collections import namedtuple #, OrderedDict
+from collections import namedtuple
 
 __all__ = ['Write', 'WriteWS', 'Cell']
 
-class Cell:
-    def __new__(cls, row, col):
-        cell = namedtuple('Cell', ['row', 'col'])
-        return cell(row, col)
+ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+alphabet = "abcdefghijklmnopqrstuvwxyz"
 
-def depth_dct(dct):
-    tlen = 0
-    for item in dct.values():
-        if type(item) is dict:
-            tlen = max(depth_dct(item), tlen)
-        elif is_iterable(item):
-            tlen = max(len(item), tlen)
-        else:
-            tlen = max(1, tlen)
-    return 1 + tlen
-# 왜 1일 더 높게 책정이 되지??????????
+class Cell:
+    def __new__(cls, *args):
+        if len(args) == 2:
+            if isinstance(args[0], int) and isinstance(args[1], int):
+                return cls._cell_rowncol(*args)
+
+    @classmethod
+    def _cell_rowncol(cls, row: int, col: int):
+        result = object.__new__(cls)
+        result.row = row
+        result.col = col
+        return result
+    def __repr__(self):
+        repr = f"Cell({self.row}, {self.col})"
+        return repr
+
+    @property
+    def strfmt(self):
+        numcol = self.col
+        strcol = ""
+
+        while True:
+            quotient = numcol // 26
+            remainder = numcol % 26
+            strcol = ALPHABET[remainder] + strcol
+            if quotient == 0:
+                break
+            numcol = quotient - 1
+
+        strrow = self.row + 1
+        return f"{strcol}{strrow}"
+
 
 class Write:
     def __init__(self, file_adrs):
@@ -256,7 +276,7 @@ class Write:
         elif isinstance(wsname, xlsxwriter.worksheet.Worksheet):
             return wsname
 
-    # Text Format
+    #Text Format
     def fmtnum(self, fmt, **kwargs):
         """
         example of fmt: 'yyyy-mm-dd', '#,##0', '#,##0.0', '0.0%'
@@ -348,11 +368,9 @@ class WriteWS(Write):
         return self.cell
 
     def setcell(self, row=None, col=None):
-        if isinstance(row, tuple):
+        if isinstance(row, Cell):
             self.cell = row
             return None
-        _row = self.cell.row
-        _col = self.cell.col
         if row is not None:
             _row = row
         if col is not None:
@@ -381,3 +399,5 @@ class WriteWS(Write):
             elif isinstance(item, dict):
                 _len = max(_len, 1 + self.dctdatalen(item))
         return _len
+
+
