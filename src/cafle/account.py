@@ -361,6 +361,13 @@ class Account:
         Return the journal dataframe
         """
         return self._jnl
+    @jnl.setter
+    def jnl(self, jnlnew):
+        if not isinstance(jnlnew, DataFrame):
+            raise AttributeError
+        if set(jnlnew.columns) != set(JNLCOL):
+            raise AttributeError
+        self._jnl = jnlnew
 
     @property
     def jnlscd(self):
@@ -368,6 +375,13 @@ class Account:
         Return the journal schedule dataframe
         """
         return self._jnlscd
+    @jnlscd.setter
+    def jnlscd(self, jnlnew):
+        if not isinstance(jnlnew, DataFrame):
+            raise AttributeError
+        if set(jnlnew.columns) != set(JNLCOL):
+            raise AttributeError
+        self._jnlscd = jnlnew
 
     #Decorator
     class getattr_dfcol:
@@ -599,4 +613,15 @@ class Account:
     @property
     def mrg(self):
         dflst = [item._df for item in self._dct.values()]
-        return Account(sum(dflst))
+        newacc = Account(sum(dflst))
+
+        jnllst = [item.jnl for item in self._dct.values()]
+        jnlmrg = pd.concat(jnllst).sort_index()
+
+        jnlscdlst = [item.jnlscd for item in self._dct.values()]
+        jnlscdmrg = pd.concat(jnlscdlst).sort_index()
+
+        newacc._jnl = jnlmrg
+        newacc._jnlscd = jnlscdmrg
+
+        return newacc
