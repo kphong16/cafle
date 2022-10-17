@@ -7,7 +7,6 @@ src/cafle/account.py
 src/cafle/genfunc.py
 src/cafle/index.py
 src/cafle/write.py
-src/cafle/write_수정전.py
 src/cafle.egg-info/PKG-INFO
 src/cafle.egg-info/SOURCES.txt
 src/cafle.egg-info/dependency_links.txt

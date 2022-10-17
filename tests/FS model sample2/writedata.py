@@ -1,8 +1,8 @@
 from datetime import date
 import pandas as pd
 from pandas import DataFrame, Series
-from cafle import Write, WriteWS, Cell, extnddct
-#from src.cafle import Write, Cell, WriteWS, extnddct
+#from cafle import Write, WriteWS, Cell, extnddct
+from src.cafle import Write, Cell, WriteWS, extnddct
 from cashflow import idx, acc, equity, loan, cost
 
 class WriteData:
@@ -20,8 +20,8 @@ class WriteData:
     def _writeastn(self):
         wb = self.wb
         ws = wb.add_ws('assumption')
-        ws.set_column("A:K", 12)
-        wd = WriteWS(ws, Cell(0, 0))
+        wb.ws['assumption'].set_column("A:K", 12)
+        #wd = WriteWS(ws, Cell(0, 0))
 
         #Format
         fmtt = [wb.bold, wb.nml]
@@ -29,68 +29,68 @@ class WriteData:
         fmtp = [wb.bold, wb.pct]
 
         #Write Head
-        wd('ASSUMPTION', wb.bold)
-        wd('Written at: ' + wb.now)
-        wd(self.prtname)
-        wd.nextcell(2)
+        ws('ASSUMPTION', wb.bold)
+        ws('Written at: ' + wb.now)
+        ws(self.prtname)
+        ws.nextcell(2)
 
-        wd('[Business Overview]', wb.bold)
-        wd(['사업명', '복합물류센터 개발사업'], fmtt)
-        wd(['사업자명', '안골개발'], fmtt)
-        wd(['지역/지구', '계획관리지역'], fmtt)
-        wd.nextcell(1)
+        ws('[Business Overview]', wb.bold)
+        ws(['사업명', '복합물류센터 개발사업'], fmtt)
+        ws(['사업자명', '안골개발'], fmtt)
+        ws(['지역/지구', '계획관리지역'], fmtt)
+        ws.nextcell(1)
 
-        wd('[Index]', wb.bold)
+        ws('[Index]', wb.bold)
         fmtd = [wb.bold, wb.month, wb.date, wb.date]
-        wd(['사업기간', len(idx) - 1, idx[0], idx[-1]], fmtd)
-        wd(['대출기간', idx.mtrt, idx.loan[0], idx.loan[-1]], fmtd)
-        wd(['건축기간', len(idx.cstrn) - 1, idx.cstrn[0], idx.cstrn[-1]], fmtd)
-        wd.nextcell(1)
+        ws(['사업기간', len(idx) - 1, idx[0], idx[-1]], fmtd)
+        ws(['대출기간', idx.mtrt, idx.loan[0], idx.loan[-1]], fmtd)
+        ws(['건축기간', len(idx.cstrn) - 1, idx.cstrn[0], idx.cstrn[-1]], fmtd)
+        ws.nextcell(1)
 
-        wd('[Equity]', wb.bold)
+        ws('[Equity]', wb.bold)
         vallst = [
             ('구분', 'name', wb.bold, wb.nml),
             ('출자금액', 'amt', wb.bold, wb.num),
         ]
         for byname, key, fmtkey, fmt in vallst:
             tmplst = [getattr(eqt, key) for eqt in equity.dct.values()]
-            wd({byname: tmplst}, fmtkey=fmtkey, fmt=fmt, valdrtn='col')
-        wd.nextcell(1)
+            ws({byname: tmplst}, fmtkey=fmtkey, fmt=fmt, valdrtn='col')
+        ws.nextcell(1)
 
-        wd('[Loan]', wb.bold)
-        wd({'구분': [_.name for _ in loan.dct.values()]}, fmtkey=wb.bold, fmt=wb.nml, valdrtn='col')
-        wd({'순위': [_.rank for _ in loan.dct.values()]}, fmtkey=wb.bold, fmt=wb.nml, valdrtn='col')
-        wd({'대출금액': [_.ntnl.amt for _ in loan.dct.values()]}, fmtkey=wb.bold, fmt=wb.num, valdrtn='col')
-        wd({'최초인출': [_.ntnl.intlamt for _ in loan.dct.values()]}, fmtkey=wb.bold, fmt=wb.num, valdrtn='col')
-        wd({'한도인출': [(_.ntnl.amt - _.ntnl.intlamt) for _ in loan.dct.values()]}, fmtkey=wb.bold, fmt=wb.num, valdrtn='col')
-        wd({'수수료율': [_.fee.rate for _ in loan.dct.values()]}, fmtkey=wb.bold, fmt=wb.pct, valdrtn='col')
-        wd({'금리': [_.IR.rate for _ in loan.dct.values()]}, fmtkey=wb.bold, fmt=wb.pct, valdrtn='col')
-        wd.nextcell(1)
+        ws('[Loan]', wb.bold)
+        ws({'구분': [_.name for _ in loan.dct.values()]}, fmtkey=wb.bold, fmt=wb.nml, valdrtn='col')
+        ws({'순위': [_.rank for _ in loan.dct.values()]}, fmtkey=wb.bold, fmt=wb.nml, valdrtn='col')
+        ws({'대출금액': [_.ntnl.amt for _ in loan.dct.values()]}, fmtkey=wb.bold, fmt=wb.num, valdrtn='col')
+        ws({'최초인출': [_.ntnl.intlamt for _ in loan.dct.values()]}, fmtkey=wb.bold, fmt=wb.num, valdrtn='col')
+        ws({'한도인출': [(_.ntnl.amt - _.ntnl.intlamt) for _ in loan.dct.values()]}, fmtkey=wb.bold, fmt=wb.num, valdrtn='col')
+        ws({'수수료율': [_.fee.rate for _ in loan.dct.values()]}, fmtkey=wb.bold, fmt=wb.pct, valdrtn='col')
+        ws({'금리': [_.IR.rate for _ in loan.dct.values()]}, fmtkey=wb.bold, fmt=wb.pct, valdrtn='col')
+        ws.nextcell(1)
 
-        wd(['만기', idx.mtrt], [wb.bold, wb.month])
-        wd(['총 대출금액', sum([ln.ntnl.amt for ln in loan.dct.values()])], [wb.bold, wb.num])
-        wd.nextcell(1)
+        ws(['만기', idx.mtrt], [wb.bold, wb.month])
+        ws(['총 대출금액', sum([ln.ntnl.amt for ln in loan.dct.values()])], [wb.bold, wb.num])
+        ws.nextcell(1)
 
     #Write Cashflow
     def _writecf(self):
         wb = self.wb
         ws = wb.add_ws('cashflow')
-        ws.set_column("A:A", 12)
-        wd = WriteWS(ws, Cell(0, 0))
+        wb.ws['cashflow'].set_column("A:A", 12)
+        #wd = WriteWS(ws, Cell(0, 0))
 
         #Write Head
-        wd('CASH FLOW', wb.bold)
-        wd('Written at: ' + wb.now)
-        wd(self.prtname)
-        cell = wd.nextcell(2)
+        ws('CASH FLOW', wb.bold)
+        ws('Written at: ' + wb.now)
+        ws(self.prtname)
+        cell = ws.nextcell(2)
 
         #Write Index
-        wd.nextcell(2)
-        wd(idx, wb.date, valdrtn='col', drtn='col')
-        wd('합계', wb.nml)
+        ws.nextcell(2)
+        ws(idx, wb.date, valdrtn='col', drtn='col')
+        ws('합계', wb.nml)
 
-        wd.setcell(cell)
-        wd.nextcell(1, drtn='col')
+        ws.setcell(cell)
+        ws.nextcell(1, drtn='col')
 
         #Write Operating Account Balance
         tmpdct = {
@@ -137,28 +137,28 @@ class WriteData:
                 dctsum[key][key2] = pd.concat([Series(srs), Series([tmpval], index=['합계'])])
 
         #Write Dictionary
-        wd(dctsum, fmtkey=wb.bold, fmt=wb.num, valdrtn='row', drtn='col')
+        ws(dctsum, fmtkey=wb.bold, fmt=wb.num, valdrtn='row', drtn='col')
 
     #Write Loan
     def _writeloan(self):
         wb = self.wb
         ws = wb.add_ws('financing')
-        ws.set_column("A:A", 12)
-        wd = WriteWS(ws, Cell(0, 0))
+        wb.ws['financing'].set_column("A:A", 12)
+        #wd = WriteWS(ws, Cell(0, 0))
 
         #Write Head
-        wd('FINANCING', wb.bold)
-        wd('Written at: ' + wb.now)
-        wd(self.prtname)
-        cell = wd.nextcell(2)
+        ws('FINANCING', wb.bold)
+        ws('Written at: ' + wb.now)
+        ws(self.prtname)
+        cell = ws.nextcell(2)
 
         #Write Index
-        wd.nextcell(3)
-        wd(idx, wb.date, valdrtn='col', drtn='col')
-        wd('합계', wb.nml)
+        ws.nextcell(3)
+        ws(idx, wb.date, valdrtn='col', drtn='col')
+        ws('합계', wb.nml)
 
-        wd.setcell(cell)
-        wd.nextcell(1, drtn='col')
+        ws.setcell(cell)
+        ws.nextcell(1, drtn='col')
 
         tmpdct = {}
         #Write Loan
@@ -188,7 +188,7 @@ class WriteData:
                         tmpval = sum(srs)
                     dctsum[key][key2][key3] = pd.concat([srs, Series([tmpval], index=['합계'])])
         #Write Dictionary
-        wd(dctsum, fmtkey=wb.bold, fmt=wb.num, valdrtn='row', drtn='col')
+        ws(dctsum, fmtkey=wb.bold, fmt=wb.num, valdrtn='row', drtn='col')
 
 DATE = date.today().strftime('%y%m%d')
 prtname = f"Example_{DATE}.xlsx"

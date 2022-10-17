@@ -174,14 +174,14 @@ class Write:
                 col = _cell.col
         return Cell(row, col)
 
-    def write_df_row(self, cell, data, ws, fmt=None, fmtkey=None):
+    def write_df_row(self, cell, data, ws, fmt=None, fmtkey=None, fmtidx=None):
         ws = self.return_ws(ws)
         dfdict = data.to_dict()
         idx = data.index
         row = cell.row
         col = cell.col
 
-        self.write_col(Cell(row + 1, col), idx, ws, fmtkey)
+        self.write_col(Cell(row + 1, col), idx, ws, fmtidx)
         col += 1
 
         for key, item in dfdict.items():
@@ -196,14 +196,14 @@ class Write:
             col += 1
         return Cell(row, col)
 
-    def write_df_col(self, cell, data, ws, fmt=None, fmtkey=None):
+    def write_df_col(self, cell, data, ws, fmt=None, fmtkey=None, fmtidx=None):
         ws = self.return_ws(ws)
         dfdict = data.to_dict()
         idx = data.index
         row = cell.row
         col = cell.col
 
-        self.write_row(Cell(row, col + 1), idx, ws, fmtkey)
+        self.write_row(Cell(row, col + 1), idx, ws, fmtidx)
         row += 1
 
         for key, item in dfdict.items():
@@ -268,7 +268,8 @@ class Write:
 
     def add_ws(self, wsname):
         self.ws[wsname] = self.wb.add_worksheet(wsname)
-        return self.ws[wsname]
+        writews = WriteWS(self.ws[wsname], cell=Cell(0,0))
+        return writews
 
     def return_ws(self, wsname):
         if isinstance(wsname, str):
@@ -327,22 +328,22 @@ class WriteWS(Write):
         self.ws = ws
         self.cell = cell
 
-    def __call__(self, data, fmt=None, fmtkey=None, valdrtn='row', drtn='col'):
+    def __call__(self, data, fmt=None, fmtkey=None, fmtidx=None, valdrtn='row', drtn='col'):
         if not is_iterable(data):
             self.cell = self.write_val(self.cell, data, self.ws, fmt=fmt, nxtcell=drtn)
         elif isinstance(data, DataFrame):
             if valdrtn == 'row':
                 if drtn == 'row':
-                    self.cell = self.write_df_row(self.cell, data, self.ws, fmt, fmtkey)
+                    self.cell = self.write_df_row(self.cell, data, self.ws, fmt, fmtkey, fmtidx)
                 elif drtn == 'col':
-                    _cell = self.write_df_row(self.cell, data, self.ws, fmt, fmtkey)
+                    _cell = self.write_df_row(self.cell, data, self.ws, fmt, fmtkey, fmtidx)
                     _len = len(data)
                     self.cell = Cell(self.cell.row + _len + 1, self.cell.col)
             elif valdrtn == 'col':
                 if drtn == 'col':
-                    self.cell = self.write_df_col(self.cell, data, self.ws, fmt, fmtkey)
+                    self.cell = self.write_df_col(self.cell, data, self.ws, fmt, fmtkey, fmtidx)
                 elif drtn == 'row':
-                    _cell = self.write_df_col(self.cell, data, self.ws, fmt, fmtkey)
+                    _cell = self.write_df_col(self.cell, data, self.ws, fmt, fmtkey, fmtidx)
                     _len = len(data)
                     self.cell = Cell(self.cell.row, self.cell.col + _len + 1)
         elif is_iterable(data) and not isinstance(data, dict):
