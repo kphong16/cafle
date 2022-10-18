@@ -7,4 +7,3 @@ acc.bca = acc.subacc("bca")
 
 acc.abc.addamt([idx[0], idx[4]], [10, 20])
 acc.bca.addamt([idx[2], idx[5]], [100, 300])
-

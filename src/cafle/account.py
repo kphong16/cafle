@@ -583,17 +583,17 @@ class Account:
         elif isinstance(idxval, str):
             idxval = str_to_date(idxval)
 
-        if 'title' in account.__dict__:
-            account_title = account.title
+        if 'name' in account.__dict__:
+            account_name = account.name
         else:
-            account_title = None
-        self.subamt(idxval, amt, account_title, note)
+            account_name = None
+        self.subamt(idxval, amt, account_name, note)
 
-        if 'title' in self.__dict__:
-            self_title = self.title
+        if 'name' in self.__dict__:
+            self_name = self.name
         else:
-            self_title = None
-        account.addamt(idxval, amt, self_title, note)
+            self_name = None
+        account.addamt(idxval, amt, self_name, note)
 
     #Set and Manage Sub Account
     def subacc(self, name):
