@@ -109,11 +109,12 @@ class Account:
             super().__setattr__('vars', [])
         super().__setattr__(key, value)
 
-        if key in ['_df', '_jnl', '_jnlscd']:
+        if key in ['_df', '_jnl', '_jnlscd', '_dct']:
             return
         if key in DFCOL:
             return
-        self.vars.append(key)
+        if key not in self.vars:
+            self.vars.append(key)
 
     def __repr__(self):
         """Return a string representation for this object."""
