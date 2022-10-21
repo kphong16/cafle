@@ -103,6 +103,18 @@ class Account:
         self._set_outputfunc()
         self._cal_bal()
 
+
+    def __setattr__(self, key, value):
+        if 'vars' not in self.__dict__:
+            super().__setattr__('vars', [])
+        super().__setattr__(key, value)
+
+        if key in ['_df', '_jnl', '_jnlscd']:
+            return
+        if key in DFCOL:
+            return
+        self.vars.append(key)
+
     def __repr__(self):
         """Return a string representation for this object."""
         if '_dct' in vars(self):
