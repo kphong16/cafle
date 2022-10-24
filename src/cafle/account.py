@@ -9,6 +9,7 @@ pd.set_option('display.max_row', 200)
 pd.set_option('display.max_columns', None)
 pd.set_option('display.width', 1000)
 import numpy as np
+from functools import partial
 
 from datetime import datetime
 from datetime import date
@@ -26,7 +27,7 @@ from .index import (
     str_to_date,
 )
 
-__all__ = ['Account']
+__all__ = ['Account', 'Setattr']
 
 DFCOL      = ['scd_in', 'scd_in_cum', 'scd_out', 'scd_out_cum',
                            'bal_strt', 'amt_in', 'amt_in_cum',
@@ -638,3 +639,33 @@ class Account:
         newacc._jnlscd = jnlscdmrg
 
         return newacc
+
+    @property
+    def mrg2(self):
+        accdct = {key: item.mrg for key, item in self._dct.items()}
+
+        dflst = [item._df for item in accdct.values()]
+        newacc = Account(sum(dflst))
+
+        jnllst = [item.jnl for item in accdct.values()]
+        jnlmrg = pd.concat(jnllst).sort_index()
+
+        jnlscdlst = [item.jnlscd for item in accdct.values()]
+        jnlscdmrg = pd.concat(jnlscdlst).sort_index()
+
+        newacc._jnl = jnlmrg
+        newacc._jnlscd = jnlscdmrg
+
+        return newacc
+
+
+#Decorator
+class Setattr:
+    def __init__(self, ipt):
+        self.ipt = ipt
+    def __call__(self, func):
+        if isinstance(self.ipt, Account):
+            setattr(self.ipt, func.__name__, partial(func, self.ipt))
+        elif isinstance(self.ipt, dict):
+            for item in self.ipt.values():
+                setattr(item, func.__name__, partial(func, item))
