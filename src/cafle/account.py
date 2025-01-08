@@ -46,9 +46,12 @@ class Account:
 
         if len(args) == 1 and len(kwargs) == 0:
             if isinstance(args[0], (DateIndex, RangeIndex)):
-                return cls._index_new(args[0])
+                return cls._index_new(args[0].values)
             if isinstance(args[0], DataFrame):
                 return cls._df_new(args[0])
+            if isinstance(args[0], list):
+                if isinstance(args[0][0], date):
+                    return cls._index_new(args[0])
 
 
         if len(args) == 0 and len(kwargs) == 1:
